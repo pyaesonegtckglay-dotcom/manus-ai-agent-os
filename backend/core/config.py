@@ -48,9 +48,11 @@ class Settings(BaseSettings):
     WS_PING_INTERVAL: int = 30
     WS_PING_TIMEOUT: int = 10
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = {
+        "env_file": ".env",
+        "case_sensitive": True,
+        "extra": "ignore"  # Allow extra environment variables
+    }
 
 
 @lru_cache()

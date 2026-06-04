@@ -6,8 +6,10 @@ from fastapi.responses import JSONResponse
 import logging
 
 from backend.core.config import get_settings
-from backend.api.routes import tasks_router, sessions_router, auth_router
+from backend.api.routes import auth_router
 from backend.api.routes.auth import public_router
+from backend.api.routes.tasks import router as tasks_router
+from backend.api.routes.sessions import router as sessions_router
 from backend.models.schemas import HealthResponse
 from backend.services import get_supabase, get_task_queue, get_ai_gateway
 from backend.utils.middleware import setup_middleware, LoggingMiddleware
