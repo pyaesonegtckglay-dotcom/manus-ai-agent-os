@@ -144,10 +144,10 @@ jobs:
           NEXT_PUBLIC_API_URL: http://localhost:8000
 
   # ===========================================
-  # BUILD & DEPLOY
+  # BUILD FRONTEND (skip Docker for now)
   # ===========================================
   build:
-    name: Build Images
+    name: Build Frontend
     runs-on: ubuntu-latest
     needs: [lint]  # Only require lint to pass
     if: github.ref == 'refs/heads/main'
@@ -156,27 +156,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: docker/Dockerfile
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository }}/backend:latest
-            ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Build frontend
         run: |
@@ -194,22 +179,16 @@ jobs:
           retention-days: 7
 
   # ===========================================
-  # DEPLOY TO STAGING
+  # DEPLOY TO VERCEL (skip Docker build)
   # ===========================================
   deploy-staging:
-    name: Deploy to Staging
+    name: Deploy to Vercel
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main'
-    environment: staging
     
     steps:
-      - name: Deploy to HuggingFace Spaces
-        run: |
-          # This would use HF Spaces deployment
-          echo "Deploying backend to HuggingFace Spaces..."
-          
-      - name: Deploy to Vercel Preview
+      - name: Deploy to Vercel
         uses: vercel/actions/deploy@v1
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -218,24 +197,15 @@ jobs:
           working-directory: ./frontend
 
   # ===========================================
-  # DEPLOY TO PRODUCTION (Manual)
+  # DEPLOY TO PRODUCTION (Manual trigger)
   # ===========================================
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: deploy-staging
     if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
-    environment: production
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy backend to HuggingFace
-        run: |
-          huggingface-cli login --token ${{ secrets.HF_TOKEN }}
-          # Deploy logic here
-
       - name: Deploy frontend to Vercel
         uses: vercel/actions/deploy@v1
         with:
@@ -244,32 +214,3 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
           working-directory: ./frontend
-
-      - name: Notify success
-        uses: slackapi/slack-github-action@v1
-        with:
-          payload: |
-            {
-              "text": "🚀 Production deployment successful!",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Manus AI Agent OS* deployed to production\nCommit: ${{ github.sha }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: success()
-
-      - name: Notify failure
-        if: failure()
-        uses: slackapi/slack-github-action@v1
-        with:
-          payload: |
-            {"text": "❌ Production deployment failed!"}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
