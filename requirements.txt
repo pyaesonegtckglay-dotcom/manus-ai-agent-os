@@ -1,0 +1,32 @@
+# FastAPI and web server
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.6
+
+# Database
+supabase>=2.3.0
+psycopg2-binary>=2.9.9
+
+# AI Providers
+openai>=1.10.0
+anthropic>=0.18.0
+
+# Redis/Queue
+upstash-redis>=1.0.0
+redis>=5.0.0
+
+# E2B Sandbox
+e2b>=0.9.0
+
+# Utilities
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+httpx>=0.26.0
+python-dotenv>=1.0.0
+
+# Hugging Face
+huggingface-hub>=0.20.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.23.0
