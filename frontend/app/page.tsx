@@ -145,12 +145,9 @@ export default function HomePage() {
           <div className="flex items-center gap-4">
             {currentTask && getStatusBadge()}
             <div className="flex items-center gap-2">
-              <span className={clsx(
-                'w-2 h-2 rounded-full',
-                currentTask ? 'bg-green-500' : 'bg-gray-500'
-              )} />
+              <span className="w-2 h-2 rounded-full bg-green-500" />
               <span className="text-sm text-slate-400">
-                {currentTask ? 'AI Connected' : 'Ready'}
+                {currentTask ? 'AI Connected' : 'Connected'}
               </span>
             </div>
           </div>
@@ -209,13 +206,6 @@ export default function HomePage() {
             </div>
           </div>
         )}
-      </div>
-
-      {/* Debug State Display */}
-      <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg text-xs font-mono z-50">
-        <div>currentTask: {currentTask ? 'SET' : 'null'}</div>
-        <div>isLoading: {String(isLoading)}</div>
-        <div>error: {error || 'null'}</div>
       </div>
     </main>
   );
