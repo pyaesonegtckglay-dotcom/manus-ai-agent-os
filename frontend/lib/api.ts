@@ -85,4 +85,3 @@ export function createWebSocket(taskId: string): WebSocket {
   return new WebSocket(`${WS_URL}/api/tasks/${taskId}/stream`);
 }
 
-export type { Task, Session };
