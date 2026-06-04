@@ -80,7 +80,10 @@ export default function HomePage() {
   }, [currentTask?.id]);
 
   const handleSubmitTask = async (description: string, priority: string) => {
+    console.log('[PAGE] handleSubmitTask START - description:', description);
+    console.log('[PAGE] Current isLoading:', isLoading);
     setIsLoading(true);
+    console.log('[PAGE] Set isLoading to true');
     setError(null);
     setMessages([]);
     console.log('[DEBUG] handleSubmitTask called:', description);
@@ -91,11 +94,13 @@ export default function HomePage() {
       const task = await createTask(description, priority);
       console.log('[DEBUG] Task created response:', task);
       setCurrentTask(task);
+      console.log('[PAGE] Set currentTask, isLoading still:', isLoading);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Failed to create task';
       console.error('[DEBUG] Task creation error:', err);
       setError(errorMsg);
     } finally {
+      console.log('[PAGE] Finally block - setting isLoading to false');
       setIsLoading(false);
     }
   };
@@ -204,6 +209,13 @@ export default function HomePage() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Debug State Display */}
+      <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg text-xs font-mono z-50">
+        <div>currentTask: {currentTask ? 'SET' : 'null'}</div>
+        <div>isLoading: {String(isLoading)}</div>
+        <div>error: {error || 'null'}</div>
       </div>
     </main>
   );
