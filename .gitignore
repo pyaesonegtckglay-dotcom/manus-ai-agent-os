@@ -38,4 +38,4 @@ Thumbs.db
 logs/
 
 # Environment examples (keep the .example version, not the actual .env)
-# .env
+# .envhf_space/
