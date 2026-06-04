@@ -1,22 +1,81 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import TaskInput from '@/components/TaskInput';
 import ActivityPanel from '@/components/ActivityPanel';
 import { createTask, getTask, type Task } from '@/lib/api';
-import { useAgentStream } from '@/hooks/useAgentStream';
 import clsx from 'clsx';
 
 export default function HomePage() {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [messages, setMessages] = useState<{type: string; content: string; timestamp: string}[]>([]);
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { messages, status, error: wsError } = useAgentStream(currentTask?.id || null);
+  // Poll for task updates when task is created
+  useEffect(() => {
+    if (currentTask && currentTask.status !== 'completed' && currentTask.status !== 'failed') {
+      // Add initial status message
+      setMessages([{
+        type: 'status',
+        content: 'Task queued, processing with AI...',
+        timestamp: new Date().toISOString()
+      }]);
+
+      // Poll for updates every 2 seconds
+      pollIntervalRef.current = setInterval(async () => {
+        try {
+          const updatedTask = await getTask(currentTask.id);
+          setCurrentTask(updatedTask);
+
+          if (updatedTask.status === 'running') {
+            setMessages(prev => [...prev, {
+              type: 'thought',
+              content: 'AI is processing your request...',
+              timestamp: new Date().toISOString()
+            }]);
+          }
+
+          if (updatedTask.status === 'completed' && updatedTask.result) {
+            const response = updatedTask.result.response || updatedTask.result.output || '';
+            setMessages(prev => [...prev, {
+              type: 'result',
+              content: response,
+              timestamp: new Date().toISOString()
+            }]);
+            if (pollIntervalRef.current) {
+              clearInterval(pollIntervalRef.current);
+            }
+          }
+
+          if (updatedTask.status === 'failed') {
+            setMessages(prev => [...prev, {
+              type: 'error',
+              content: updatedTask.error || 'Task failed',
+              timestamp: new Date().toISOString()
+            }]);
+            if (pollIntervalRef.current) {
+              clearInterval(pollIntervalRef.current);
+            }
+          }
+        } catch (err) {
+          console.error('Poll error:', err);
+        }
+      }, 2000);
+
+      return () => {
+        if (pollIntervalRef.current) {
+          clearInterval(pollIntervalRef.current);
+        }
+      };
+    }
+  }, [currentTask?.id]);
 
   const handleSubmitTask = async (description: string, priority: string) => {
     setIsLoading(true);
     setError(null);
+    setMessages([]);
 
     try {
       const task = await createTask(description, priority);
@@ -71,11 +130,11 @@ export default function HomePage() {
             <div className="flex items-center gap-2">
               <span className={clsx(
                 'w-2 h-2 rounded-full',
-                status === 'connected' ? 'bg-green-500' :
-                status === 'connecting' ? 'bg-yellow-500 animate-pulse' :
-                'bg-gray-500'
+                currentTask ? 'bg-green-500' : 'bg-gray-500'
               )} />
-              <span className="text-sm text-slate-400">{status}</span>
+              <span className="text-sm text-slate-400">
+                {currentTask ? 'AI Connected' : 'Ready'}
+              </span>
             </div>
           </div>
         </div>
@@ -92,11 +151,6 @@ export default function HomePage() {
               {error && (
                 <div className="mt-4 p-4 bg-red-500/10 border border-red-500/50 rounded-lg">
                   <p className="text-sm text-red-400">{error}</p>
-                </div>
-              )}
-              {wsError && (
-                <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/50 rounded-lg">
-                  <p className="text-sm text-yellow-400">Connection: {wsError}</p>
                 </div>
               )}
             </div>
@@ -125,17 +179,17 @@ export default function HomePage() {
 
           {/* Right Column - Activity Panel */}
           <div className="lg:col-span-2">
-            <ActivityPanel messages={messages} status={status} />
+            <ActivityPanel messages={messages} status={currentTask ? 'connected' : 'disconnected'} />
           </div>
         </div>
 
         {/* Results Section */}
         {currentTask?.status === 'completed' && currentTask.result && (
           <div className="mt-8 bg-dark-100 rounded-lg border border-slate-700 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Task Result</h2>
-            <pre className="bg-dark-200 rounded-lg p-4 overflow-x-auto text-sm text-slate-300">
-              {JSON.stringify(currentTask.result, null, 2)}
-            </pre>
+            <h2 className="text-lg font-semibold text-white mb-4">AI Response</h2>
+            <div className="bg-dark-200 rounded-lg p-4 text-sm text-slate-300 whitespace-pre-wrap">
+              {currentTask.result.response || currentTask.result.output || JSON.stringify(currentTask.result, null, 2)}
+            </div>
           </div>
         )}
       </div>
