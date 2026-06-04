@@ -1,4 +1,6 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Update frontend API URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://PYAE1994-manus-backend.hf.space';
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'wss://PYAE1994-manus-backend.hf.space';
 
 export interface Task {
   id: string;
@@ -81,7 +83,6 @@ export async function getHealth(): Promise<{ status: string; services: Record<st
 }
 
 export function createWebSocket(taskId: string): WebSocket {
-  const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
   return new WebSocket(`${WS_URL}/api/tasks/${taskId}/stream`);
 }
 
