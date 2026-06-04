@@ -1,5 +1,5 @@
 """E2B Sandbox service for AI agent execution."""
-from e2b import Sandbox, SandboxTemplate
+from e2b import Sandbox
 from backend.core.config import get_settings
 from typing import Optional, AsyncGenerator
 import asyncio
