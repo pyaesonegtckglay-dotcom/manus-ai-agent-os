@@ -38,7 +38,7 @@ export default function HomePage() {
           }
 
           if (updatedTask.status === 'completed' && updatedTask.result) {
-            const response = updatedTask.result.response || updatedTask.result.output || '';
+            const response = String(updatedTask.result.response || updatedTask.result.output || '');
             setMessages(prev => [...prev, {
               type: 'result',
               content: response,
@@ -184,11 +184,11 @@ export default function HomePage() {
         </div>
 
         {/* Results Section */}
-        {currentTask?.status === 'completed' && currentTask.result && (
+        {currentTask && currentTask.status === 'completed' && currentTask.result && (
           <div className="mt-8 bg-dark-100 rounded-lg border border-slate-700 p-6">
             <h2 className="text-lg font-semibold text-white mb-4">AI Response</h2>
             <div className="bg-dark-200 rounded-lg p-4 text-sm text-slate-300 whitespace-pre-wrap">
-              {currentTask.result.response || currentTask.result.output || JSON.stringify(currentTask.result, null, 2)}
+              {String(currentTask.result.response || currentTask.result.output || JSON.stringify(currentTask.result, null, 2))}
             </div>
           </div>
         )}
