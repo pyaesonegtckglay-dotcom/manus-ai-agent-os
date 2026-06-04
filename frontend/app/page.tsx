@@ -6,6 +6,9 @@ import ActivityPanel from '@/components/ActivityPanel';
 import { createTask, getTask, type Task } from '@/lib/api';
 import clsx from 'clsx';
 
+// Note: Using HTTP polling instead of WebSocket for task updates
+// This works better with Vercel/Edge deployments and HF Spaces
+
 export default function HomePage() {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +29,9 @@ export default function HomePage() {
       // Poll for updates every 2 seconds
       pollIntervalRef.current = setInterval(async () => {
         try {
+          console.log('Polling for task updates:', currentTask.id);
           const updatedTask = await getTask(currentTask.id);
+          console.log('Task updated:', updatedTask.status);
           setCurrentTask(updatedTask);
 
           if (updatedTask.status === 'running') {
@@ -78,11 +83,14 @@ export default function HomePage() {
     setMessages([]);
 
     try {
+      console.log('Creating task:', description);
       const task = await createTask(description, priority);
+      console.log('Task created:', task);
       setCurrentTask(task);
     } catch (err) {
-      setError('Failed to create task. Please try again.');
-      console.error(err);
+      const errorMsg = err instanceof Error ? err.message : 'Failed to create task';
+      console.error('Task creation error:', err);
+      setError(errorMsg);
     } finally {
       setIsLoading(false);
     }
