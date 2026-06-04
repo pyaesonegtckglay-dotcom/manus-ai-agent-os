@@ -139,7 +139,7 @@ export default function HomePage() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">Manus AI Agent OS</h1>
-              <p className="text-sm text-slate-400">Autonomous task execution</p>
+              <p className="text-sm text-slate-400">Autonomous task execution v2</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
