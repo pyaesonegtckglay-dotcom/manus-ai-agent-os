@@ -1,0 +1,11 @@
+{
+  "title": "Manus AI Agent OS",
+  "emoji": "🤖",
+  "colorFrom": "blue",
+  "colorTo": "purple",
+  "sdk": "gradio",
+  "app_file": "app.py",
+  "pinned": false,
+  "disable_embedding": false,
+  "hardware": "t4-small"
+}

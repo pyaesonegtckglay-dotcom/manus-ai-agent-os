@@ -1,0 +1,7 @@
+{
+  "buildCommand": "pip install -r backend/requirements.txt",
+  "devCommand": "cd backend && python -m uvicorn main:app --reload",
+  "installCommand": "pip install -r backend/requirements.txt",
+  "framework": null,
+  "regions": ["iad1"]
+}
