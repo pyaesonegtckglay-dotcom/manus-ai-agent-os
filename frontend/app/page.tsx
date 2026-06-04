@@ -8,6 +8,7 @@ import clsx from 'clsx';
 
 // Note: Using HTTP polling instead of WebSocket for task updates
 // This works better with Vercel/Edge deployments and HF Spaces
+// Version: 1.0.1
 
 export default function HomePage() {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
