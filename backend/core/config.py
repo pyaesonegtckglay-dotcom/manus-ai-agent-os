@@ -7,36 +7,42 @@ from functools import lru_cache
 class Settings(BaseSettings):
     # Application
     APP_NAME: str = "Manus AI Agent OS"
-    APP_VERSION: str = "0.1.0"
-    DEBUG: bool = False
+    APP_VERSION: str = "0.2.0"
+    DEBUG: bool = True
     
-    # Supabase
-    SUPABASE_URL: str = "https://muqqdllxsnnhzasffbsw.supabase.co"
-    SUPABASE_KEY: str = ""
-    SUPABASE_SERVICE_KEY: str = ""
+    # Supabase - use environment variables
+    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "https://muqqdllxsnnhzasffbsw.supabase.co")
+    SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")
+    SUPABASE_SERVICE_KEY: str = os.getenv("SUPABASE_SERVICE_KEY", "")
     
     # E2B Sandbox
-    E2B_API_KEY: str = ""
+    E2B_API_KEY: str = os.getenv("E2B_API_KEY", "")
     E2B_SANDBOX_TEMPLATE: str = "base"
     
     # Upstash Redis
-    UPSTASH_REDIS_REST_URL: str = "https://prime-sawfish-129006.upstash.io"
-    UPSTASH_REDIS_REST_TOKEN: str = ""
+    UPSTASH_REDIS_REST_URL: str = os.getenv("UPSTASH_REDIS_REST_URL", "https://prime-sawfish-129006.upstash.io")
+    UPSTASH_REDIS_REST_TOKEN: str = os.getenv("UPSTASH_REDIS_REST_TOKEN", "")
     
     # AI Providers
-    GEMINI_API_KEY: str = ""
-    OPENROUTER_API_KEY: str = ""
-    SAMBANOVA_API_KEY: str = ""
-    ANTHROPIC_API_KEY: str = ""
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    OPENROUTER_API_KEY: str = os.getenv("OPENROUTER_API_KEY", "")
+    SAMBANOVA_API_KEY: str = os.getenv("SAMBANOVA_API_KEY", "")
+    ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
+    
+    # HuggingFace
+    HF_TOKEN: str = os.getenv("HF_TOKEN", "")
+    
+    # Tavily Search
+    TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
     
     # GitHub
-    GITHUB_TOKEN: str = ""
+    GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN", "")
     
     # Google (for workspace integration)
-    GOOGLE_APPLICATION_CREDENTIALS: str = "config/firebase-service-account.json"
+    GOOGLE_APPLICATION_CREDENTIALS: str = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
     
-    # CORS
-    CORS_ORIGINS: list[str] = ["http://localhost:3000", "https://*.vercel.app"]
+    # CORS - allow all for deployment
+    CORS_ORIGINS: list[str] = ["*"]
     
     # WebSocket
     WS_PING_INTERVAL: int = 30
