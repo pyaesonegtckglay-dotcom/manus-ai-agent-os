@@ -196,7 +196,7 @@ export default function HomePage() {
 
           {/* Right Column - Activity Panel */}
           <div className="lg:col-span-2">
-            <ActivityPanel messages={messages} status={currentTask ? 'connected' : 'disconnected'} />
+            <ActivityPanel messages={messages} status="connected" />
           </div>
         </div>
 
