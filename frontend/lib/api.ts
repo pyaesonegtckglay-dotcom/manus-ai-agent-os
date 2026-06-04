@@ -26,6 +26,9 @@ export interface Session {
 }
 
 export async function createTask(description: string, priority: string = 'normal'): Promise<Task> {
+  console.log('[API] createTask called with:', description);
+  console.log('[API] Using URL:', API_URL);
+  
   const response = await fetch(`${API_URL}/api/tasks`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -36,11 +39,17 @@ export async function createTask(description: string, priority: string = 'normal
     }),
   });
   
+  console.log('[API] Response status:', response.status);
+  
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error('[API] Error response:', errorText);
     throw new Error('Failed to create task');
   }
   
-  return response.json();
+  const data = await response.json();
+  console.log('[API] Task created:', data);
+  return data;
 }
 
 export async function getTask(taskId: string): Promise<Task> {

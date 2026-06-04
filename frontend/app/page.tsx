@@ -8,7 +8,7 @@ import clsx from 'clsx';
 
 // Note: Using HTTP polling instead of WebSocket for task updates
 // This works better with Vercel/Edge deployments and HF Spaces
-// Version: 1.0.1
+// Version: 1.0.2 - Added debug logging
 
 export default function HomePage() {
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
@@ -16,6 +16,7 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [messages, setMessages] = useState<{type: string; content: string; timestamp: string}[]>([]);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const taskCreatedRef = useRef(false);
 
   // Poll for task updates when task is created
   useEffect(() => {
@@ -82,15 +83,17 @@ export default function HomePage() {
     setIsLoading(true);
     setError(null);
     setMessages([]);
+    console.log('[DEBUG] handleSubmitTask called:', description);
+    console.log('[DEBUG] API URL:', process.env.NEXT_PUBLIC_API_URL || 'default');
 
     try {
       console.log('Creating task:', description);
       const task = await createTask(description, priority);
-      console.log('Task created:', task);
+      console.log('[DEBUG] Task created response:', task);
       setCurrentTask(task);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Failed to create task';
-      console.error('Task creation error:', err);
+      console.error('[DEBUG] Task creation error:', err);
       setError(errorMsg);
     } finally {
       setIsLoading(false);
