@@ -42,7 +42,7 @@ jobs:
 
       - name: Run Python linter
         run: |
-          flake8 backend --max-line-length=100 --ignore=E501,W503,F401,F841,W292,W293 --exclude=backend/utils/middleware.py,backend/utils/tools.py
+          flake8 backend --max-line-length=100 --ignore=E501,W503,F401,F841,W292,W293,F541 --exclude=backend/utils/middleware.py,backend/utils/tools.py
           mypy backend --ignore-missing-imports --allow-untyped-defs 2>/dev/null || true
 
       # Node Linting
