@@ -1,0 +1,1 @@
+{"config":{"name":"Next.js Server Handler","generator":"@netlify/plugin-nextjs@5.15.11","nodeBundler":"none","includedFiles":["**"],"includedFilesBasePath":"/workspace/project/frontend/.netlify/functions-internal/___netlify-server-handler"},"version":1}
